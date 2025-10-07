@@ -11,27 +11,21 @@
  */
 class Solution {
 public:
+    void Rview(TreeNode* root, int level, vector<int>& ans){
+        if(!root) return;
+        
+        if(level == ans.size()) ans.push_back(root->val);
+        
+        Rview(root->right, level+1, ans);
+        Rview(root->left, level+1, ans);
+    }
+
     vector<int> rightSideView(TreeNode* root) {
         vector<int> ans;
         
         if (root == nullptr) return ans;
         
-        queue<TreeNode*> q;
-        q.push(root);
-        
-        while(!q.empty()){
-            int n = q.size();
-            ans.push_back(q.front()->val);
-            
-            while(n--){
-                TreeNode* temp = q.front();
-                q.pop();
-                
-                if(temp->right) q.push(temp->right);
-                
-                if(temp->left) q.push(temp->left);
-            }
-        }
+        Rview(root, 0, ans);
         
         return ans;
     }
