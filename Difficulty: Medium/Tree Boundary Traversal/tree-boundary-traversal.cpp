@@ -5,7 +5,6 @@ class Node {
     Node* left;
     Node* right;
 
-    // Constructor to initialize a new node
     Node(int val) {
         data = val;
         left = NULL;
@@ -16,50 +15,50 @@ class Node {
 
 class Solution {
   public:
-    bool isleaf(Node* node) {
-        return (node->left == NULL && node->right == NULL);
+    void LeftSub(Node* root, vector<int>& ans) {
+        if (!root || (!root->left && !root->right)) return;
+        
+        ans.push_back(root->data);
+        if (root->left)
+            LeftSub(root->left, ans);
+        else
+            LeftSub(root->right, ans);
     }
-
-    void addLeftBoundary(Node* root, vector<int>& ans) {
-        Node* curr = root->left;
-        while (curr) {
-            if (!isleaf(curr)) ans.push_back(curr->data);
-            if (curr->left) curr = curr->left;
-            else curr = curr->right;
-        }
-    }
-
-    void addRightBoundary(Node* root, vector<int>& ans) {
-        vector<int> temp;
-        Node* curr = root->right;
-        while (curr) {
-            if (!isleaf(curr)) temp.push_back(curr->data);
-            if (curr->right) curr = curr->right;
-            else curr = curr->left;
-        }
-        for (int i = temp.size() - 1; i >= 0; i--) {
-            ans.push_back(temp[i]);
-        }
-    }
-
-    void addLeaf(Node* root, vector<int>& ans) {
-        if (isleaf(root)) {
+    
+    void Leaf(Node* root, vector<int>& ans) {
+        if (!root) return;
+        
+        if (!root->left && !root->right) {
             ans.push_back(root->data);
             return;
         }
-        if (root->left) addLeaf(root->left, ans);
-        if (root->right) addLeaf(root->right, ans);
+        
+        Leaf(root->left, ans);
+        Leaf(root->right, ans);
     }
-
-    vector<int> boundaryTraversal(Node* root) {
+    
+    void RightSub(Node* root, vector<int>& ans) {
+        if (!root || (!root->left && !root->right)) return;
+        
+        if (root->right)
+            RightSub(root->right, ans);
+        else
+            RightSub(root->left, ans);
+        
+        ans.push_back(root->data);
+    }
+    
+    vector<int> boundaryTraversal(Node *root) {
         vector<int> ans;
-        if (root == NULL) return ans;
-        if (!isleaf(root)) ans.push_back(root->data);
-
-        addLeftBoundary(root, ans);
-        addLeaf(root, ans);
-        addRightBoundary(root, ans);
-
+        if (!root) return ans;
+        
+        ans.push_back(root->data);
+        
+        LeftSub(root->left, ans);
+        Leaf(root->left, ans);
+        Leaf(root->right, ans);
+        RightSub(root->right, ans);
+        
         return ans;
     }
 };
