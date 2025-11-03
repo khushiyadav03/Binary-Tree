@@ -2,39 +2,33 @@ class Solution {
   public:
     vector<int> inOrder(Node* root) {
         vector<int> ans;
-        if (!root) return ans;
-
-        stack<Node*> s;
-        stack<bool> visited;
-
-        s.push(root);
-        visited.push(0);
-
-        while (!s.empty()) {
-            Node* temp = s.top();
-            s.pop();
-            bool flag = visited.top();
-            visited.pop();
-
-            if (!flag) {
-
-                if (temp->right) {
-                    s.push(temp->right);
-                    visited.push(0);
-                }
-
-                s.push(temp);
-                visited.push(1);
-
-                if (temp->left) {
-                    s.push(temp->left);
-                    visited.push(0);
-                }
+        if (!root) return ans; // handle empty tree
+        
+        while (root) {
+            if (!root->left) {
+                ans.push_back(root->data);
+                root = root->right;
             } else {
-                ans.push_back(temp->data);
+                Node* curr = root->left;
+
+                // find rightmost node in left subtree
+                while (curr->right && curr->right != root) {
+                    curr = curr->right;
+                }
+
+                // if thread not created, make one
+                if (curr->right == NULL) {
+                    curr->right = root;  
+                    root = root->left;
+                }
+                // if thread already exists, remove it
+                else {
+                    curr->right = NULL;  
+                    ans.push_back(root->data);
+                    root = root->right;
+                }
             }
         }
-
         return ans;
     }
 };
