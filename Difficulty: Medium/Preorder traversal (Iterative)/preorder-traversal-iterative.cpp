@@ -14,19 +14,30 @@ class Node {
 class Solution {
   public:
     vector<int> preOrder(Node* root) {
-        // code here
-        stack<Node*> s;
-        s.push(root);
         vector<int> ans;
+        Node* curr = root;
         
-        while(!s.empty()){
-            Node* temp = s.top();
-            s.pop();
-            
-            ans.push_back(temp->data);
-            
-            if(temp->right) s.push(temp->right);
-            if(temp->left) s.push(temp->left);
+        while (curr) {
+            if (curr->left == NULL) {
+                ans.push_back(curr->data);  // Visit the node
+                curr = curr->right;
+            } 
+            else {
+                Node* prev = curr->left;
+                while (prev->right && prev->right != curr) {
+                    prev = prev->right;
+                }
+                
+                if (prev->right == NULL) {
+                    ans.push_back(curr->data);  // Visit before making the link (preorder)
+                    prev->right = curr;  // Make thread
+                    curr = curr->left;
+                } 
+                else {
+                    prev->right = NULL;  // Remove thread
+                    curr = curr->right;
+                }
+            }
         }
         
         return ans;
