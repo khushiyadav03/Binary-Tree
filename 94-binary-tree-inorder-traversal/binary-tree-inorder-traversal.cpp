@@ -12,15 +12,34 @@
 class Solution {
 public:
     vector<int> inorderTraversal(TreeNode* root) {
-        if (!root) return {};
-        
         vector<int> ans;
-        vector<int> left = inorderTraversal(root->left);
-        vector<int> right = inorderTraversal(root->right);
+        if (!root) return ans;
+        
+        while (root) {
+            if (!root->left) {
+                ans.push_back(root->val);
+                root = root->right;
+            } 
+            else {
+                TreeNode* curr = root->left;
 
-        ans.insert(ans.end(), left.begin(), left.end());
-        ans.push_back(root->val);
-        ans.insert(ans.end(), right.begin(), right.end());
+                // find the rightmost node in left subtree
+                while (curr->right && curr->right != root) {
+                    curr = curr->right;
+                }
+
+                // left subtree not yet traversed
+                if (curr->right == NULL) {
+                    curr->right = root; 
+                    root = root->left;
+                } 
+                else {
+                    curr->right = NULL; 
+                    ans.push_back(root->val); 
+                    root = root->right;
+                }
+            }
+        }
 
         return ans;
     }
