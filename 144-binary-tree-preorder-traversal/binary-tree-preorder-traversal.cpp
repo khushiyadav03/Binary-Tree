@@ -1,16 +1,34 @@
 class Solution {
 public:
     vector<int> preorderTraversal(TreeNode* root) {
-        if (!root) return {};
-        
         vector<int> ans;
-        ans.push_back(root->val);
+        if (!root) return ans;
+        
+        while (root) {
+            if (!root->left) {
+                ans.push_back(root->val);
+                root = root->right;
+            } 
+            else {
+                TreeNode* curr = root->left;
 
-        vector<int> left = preorderTraversal(root->left);
-        vector<int> right = preorderTraversal(root->right);
+                // find the rightmost node in left subtree
+                while (curr->right && curr->right != root) {
+                    curr = curr->right;
+                }
 
-        ans.insert(ans.end(), left.begin(), left.end());
-        ans.insert(ans.end(), right.begin(), right.end());
+                // left subtree not yet traversed
+                if (curr->right == NULL) {
+                    ans.push_back(root->val);
+                    curr->right = root; 
+                    root = root->left;
+                } 
+                else {
+                    curr->right = NULL;  
+                    root = root->right;
+                }
+            }
+        }
 
         return ans;
     }
