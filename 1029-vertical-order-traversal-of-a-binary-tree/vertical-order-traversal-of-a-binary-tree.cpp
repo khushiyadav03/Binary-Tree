@@ -1,48 +1,34 @@
 class Solution {
 public:
     vector<vector<int>> verticalTraversal(TreeNode* root) {
+        vector<tuple<int,int,int>> nodes; 
+        // stores {col, row, val}
 
-        // col -> row -> sorted values
-        map<int, map<int, multiset<int>>> nodes;
+        dfs(root, 0, 0, nodes);
 
-        // BFS queue: {node, {row, col}}
-        queue<pair<TreeNode*, pair<int,int>>> q;
-        q.push({root, {0, 0}});
+        // Sort by: col, then row, then value
+        sort(nodes.begin(), nodes.end());
 
-        while (!q.empty()) {
-
-            auto p = q.front();
-            q.pop();
-
-            TreeNode* node = p.first;
-            int row = p.second.first;
-            int col = p.second.second;
-
-            // Insert node into map structure
-            nodes[col][row].insert(node->val);
-
-            if (node->left)
-                q.push({node->left, {row + 1, col - 1}});
-
-            if (node->right)
-                q.push({node->right, {row + 1, col + 1}});
-        }
-
-        // Build final answer
         vector<vector<int>> ans;
+        int prevCol = INT_MIN;
 
-        for (auto &colPair : nodes) {
-            vector<int> colNodes;
-            for (auto &rowPair : colPair.second) {
-                colNodes.insert(
-                    colNodes.end(),
-                    rowPair.second.begin(),
-                    rowPair.second.end()
-                );
+        for(auto &[col, row, val] : nodes) {
+            if(col != prevCol){
+                ans.push_back({});
+                prevCol = col;
             }
-            ans.push_back(colNodes);
+            ans.back().push_back(val);
         }
 
         return ans;
+    }
+
+    void dfs(TreeNode* node, int row, int col, vector<tuple<int,int,int>>& nodes) {
+        if(!node) return;
+
+        nodes.push_back({col, row, node->val});
+
+        dfs(node->left, row + 1, col - 1, nodes);
+        dfs(node->right, row + 1, col + 1, nodes);
     }
 };
